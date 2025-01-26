@@ -4,10 +4,10 @@ on:
     push:
         branches:
             - main
+            - arm64-wheel
     pull_request:
         branches:
             - main
-    workflow_dispatch:
 jobs:
     windows:
         name: Windows Py${{ matrix.PYTHON_VERSION }}
