@@ -60,6 +60,11 @@ jobs:
             - name: Copy winpty binaries to package
               shell: bash -l {0}
               run: bash -l .github/scripts/copy_winpty.sh
+            - name: Publish artifacts
+              uses: actions/download-artifact@v4
+              with:
+                pattern: artifacts-*
+                path: winpty
             # Enable this to get RDP access to the worker.
             # - name: Download
             #   # if: ${{ failure() }}
