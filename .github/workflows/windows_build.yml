@@ -56,6 +56,10 @@ jobs:
               if: ${{ matrix.TARGET_ARCH }} == "x86_64-pc-windows-msvc"
               shell: pwsh
               run: python runtests.py
+            # Delete this when done testing
+            - name: Copy winpty binaries to package
+              shell: bash -l {0}
+              run: bash -l .github/scripts/copy_winpty.sh
             # Enable this to get RDP access to the worker.
             # - name: Download
             #   # if: ${{ failure() }}
