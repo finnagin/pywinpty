@@ -7,9 +7,10 @@ on:
     pull_request:
         branches:
             - main
+            - win-arm64
 jobs:
     windows:
-        name: Windows Py${{ matrix.PYTHON_VERSION }}
+        name: Windows Py${{ matrix.PYTHON_VERSION }} ${{ matrix.TARGET_ARCH }}
         runs-on: windows-latest
         timeout-minutes: 10
         env:
@@ -21,6 +22,7 @@ jobs:
             fail-fast: false
             matrix:
                 PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.13t"]
+                TARGET_ARCH: ["x86_64-pc-windows-msvc", "aarch64-pc-windows-msvc"]
         steps:
             - name: Checkout branch
               uses: actions/checkout@v4
@@ -67,8 +69,17 @@ jobs:
               shell: bash -l {0}
               run: maturin develop
             - name: Run tests
+              if: ${{ matrix.TARGET_ARCH }} == "x86_64-pc-windows-msvc"
               shell: pwsh
               run: python runtests.py
+            # Delete this when done testing
+            - name: Copy winpty binaries to package
+              shell: bash -l {0}
+              run: bash -l .github/scripts/copy_winpty.sh
+            - name: Publish artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                path: winpty
             # Enable this to get RDP access to the worker.
             # - name: Download
             #   # if: ${{ failure() }}
