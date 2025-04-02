@@ -78,7 +78,7 @@ jobs:
               run: bash -l .github/scripts/copy_winpty.sh
             - name: Build wheels
               shell: bash -l {0}
-              run: maturin build --target-dir winpty
+              run: maturin build --no-sdist --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
             - name: Publish artifacts
               uses: actions/upload-artifact@v4
               with:
