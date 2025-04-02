@@ -30,7 +30,7 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                 toolchain: stable
-                target: x86_64-pc-windows-msvc
+                target: ${{ matrix.TARGET_ARCH }}
                 override: true
                 components: rustfmt, clippy
             - name: Remove free-threaded suffix from version
