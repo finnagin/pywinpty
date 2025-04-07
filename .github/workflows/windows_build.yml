@@ -69,7 +69,7 @@ jobs:
               shell: bash -l {0}
               run: maturin develop
             - name: Run tests
-              if: ${{ matrix.TARGET_ARCH == "x86_64-pc-windows-msvc" }}
+              if: ${{ matrix.TARGET_ARCH }} == "x86_64-pc-windows-msvc"
               shell: pwsh
               run: python runtests.py
             # Delete this when done testing
@@ -79,7 +79,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5
               id: cpARM
-              if: ${{ matrix.TARGET_ARCH == "aarch64-pc-windows-msvc" }}
+              if: ${{ matrix.TARGET_ARCH }} == "aarch64-pc-windows-msvc"
               with:
                 python-version: ${{ env.PYTHON_VERSION_NONSUFFIX }}
                 update-environment: false
