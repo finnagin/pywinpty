@@ -76,14 +76,27 @@ jobs:
             - name: Copy winpty binaries to package
               shell: bash -l {0}
               run: bash -l .github/scripts/copy_winpty.sh
+            - uses: actions/setup-python@v5
+              id: cpARM
+              if: ${{ matrix.TARGET_ARCH }} == "aarch64-pc-windows-msvc"
+              with:
+                python-version: ${{ env.PYTHON_VERSION_NONSUFFIX }}
+                update-environment: false
+                architecture: 'arm64'
             - name: Build wheels
               shell: bash -l {0}
-              run: maturin build -i $(which python) --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
+              run: maturin build -i ${{ steps.cpARM.outputs.python-path || $(which python) }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
             - name: Publish artifacts
               uses: actions/upload-artifact@v4
               with:
                 name: pywinpty-windows-Py${{ matrix.PYTHON_VERSION }}-${{ matrix.TARGET_ARCH }}
                 path: winpty
+            - name: Publish python
+              uses: actions/upload-artifact@v4
+              if: ${{ matrix.TARGET_ARCH }} == "aarch64-pc-windows-msvc"
+              with:
+                name: python-Py${{ matrix.PYTHON_VERSION }}-${{ matrix.TARGET_ARCH }}
+                path: ${{ steps.cpARM.outputs.python-path }}
             # Enable this to get RDP access to the worker.
             # - name: Download
             #   # if: ${{ failure() }}
