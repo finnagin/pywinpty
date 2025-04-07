@@ -85,7 +85,7 @@ jobs:
                 architecture: 'arm64'
             - name: Build wheels
               shell: bash -l {0}
-              run: maturin build -i ${{ steps.cpARM.outputs.python-path || $(which python) }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
+              run: maturin build -i ${{ steps.cpARM.outputs.python-path || (which python) }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
             - name: Publish artifacts
               uses: actions/upload-artifact@v4
               with:
