@@ -97,8 +97,9 @@ jobs:
               id: cpARM
               run: | 
                 nuget install pythonarm64 -Version ${{ env.PYTHON_VERSION_NONSUFFIX }} -OutputDirectory winpty/pythonarm
-                $nuget_python_path=$(find ${GITHUB_WORKSPACE//\\//}/winpty/pythonarm/* -maxdepth 0 -type d)
-                echo "target_python=$nuget_python_path/tools" >> $GITHUB_OUTPUT
+                $nuget_python_path=$(find winpty/pythonarm/* -maxdepth 0 -type d)
+                echo $nuget_python_path
+                echo "target_python=${GITHUB_WORKSPACE//\\//}/$nuget_python_path/tools" >> $GITHUB_OUTPUT
             - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
               name: Publish python artifacts
               uses: actions/upload-artifact@v4
