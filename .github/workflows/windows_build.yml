@@ -88,14 +88,15 @@ jobs:
               name: Setup ARM64 Python
               id: cpARM
               run: | 
-                nuget install pythonarm64 -Version ${{ env.PYTHON_VERSION_NONSUFFIX }} -OutputDirectory winpty
-                echo "target_python=${{ github.workspace }}\winpty\pythonarm64.${{ env.PYTHON_VERSION_NONSUFFIX }}.0\tools".replace('\', '/') >> $ENV:GITHUB_OUTPUT
+                nuget install pythonarm64 -Version ${{ env.PYTHON_VERSION_NONSUFFIX }} -OutputDirectory winpty\pythonarm
+                $nuget_python_version = (Get-ChildItem ${{ github.workspace }}\winpty\pythonarm).Name
+                echo "target_python=${{ github.workspace }}\winpty\pythonarm\$nuget_python\tools".replace('\', '/') >> $ENV:GITHUB_OUTPUT
             - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
               name: Publish python artifacts
               uses: actions/upload-artifact@v4
               with:
                 name: pythonarm-${{ matrix.PYTHON_VERSION }}
-                path: winpty\pythonarm64.${{ env.PYTHON_VERSION_NONSUFFIX }}
+                path: winpty\pythonarm
             # - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
             #   name: Setup Python
             #   uses: actions/setup-python@v5
