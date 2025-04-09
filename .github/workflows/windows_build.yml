@@ -86,7 +86,7 @@ jobs:
               id: cpARM
               run: | 
                 nuget install pythonarm64 -Version ${{ env.PYTHON_VERSION_NONSUFFIX }} -OutputDirectory winpty
-                $target-python = '${{ github.workspace }}\winpty\pythonarm64.${{ env.PYTHON_VERSION_NONSUFFIX }}\tools'
+                $target_python = '${{ github.workspace }}\winpty\pythonarm64.${{ env.PYTHON_VERSION_NONSUFFIX }}\tools'
             - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
               name: Publish python artifacts
               uses: actions/upload-artifact@v4
@@ -103,7 +103,7 @@ jobs:
             #     architecture: 'arm64'
             - name: Build wheels
               shell: bash -l {0}
-              run: maturin build -i ${{ steps.cpARM.outputs.target-python || env.native-python }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
+              run: maturin build -i ${{ steps.cpARM.outputs.target_python || env.native-python }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
               env:
                 native-python: $(which python)
             - name: Publish artifacts
