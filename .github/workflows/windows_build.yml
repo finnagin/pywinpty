@@ -103,7 +103,7 @@ jobs:
             #     architecture: 'arm64'
             - name: Build wheels
               shell: bash -l {0}
-              run: maturin build -i ${{ ${{ steps.cpARM.outputs.target-python }} || env.native-python }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
+              run: maturin build -i ${{ steps.cpARM.outputs.target-python || env.native-python }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
               env:
                 native-python: $(which python)
             - name: Publish artifacts
