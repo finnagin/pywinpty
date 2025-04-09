@@ -77,16 +77,30 @@ jobs:
               shell: bash -l {0}
               run: bash -l .github/scripts/copy_winpty.sh
             - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
-              name: Setup Python
-              uses: actions/setup-python@v5
-              id: cpARM
+              name: Setup NuGet.exe
+              uses: nuget/setup-nuget@v2
               with:
-                python-version: ${{ env.PYTHON_VERSION_NONSUFFIX }}
-                update-environment: false
-                architecture: 'arm64'
+                nuget-version: 'latest'
+            - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
+              name: Setup ARM64 Python
+              run: nuget install pythonarm64 -Version ${{ env.PYTHON_VERSION_NONSUFFIX }} -OutputDirectory winpty\pythonarm
+            - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
+              name: Publish python artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: pythonarm-${{ matrix.PYTHON_VERSION }}
+                path: winpty\pythonarm
+            # - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
+            #   name: Setup Python
+            #   uses: actions/setup-python@v5
+            #   id: cpARM
+            #   with:
+            #     python-version: ${{ env.PYTHON_VERSION_NONSUFFIX }}
+            #     update-environment: false
+            #     architecture: 'arm64'
             - name: Build wheels
               shell: bash -l {0}
-              run: maturin build -i ${{ steps.cpARM.outputs.python-path || env.native-python }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
+              run: maturin build -i ${{ '.\winpty\pythonarm' || env.native-python }} --target ${{ matrix.TARGET_ARCH }} --target-dir winpty
               env:
                 native-python: $(which python)
             - name: Publish artifacts
