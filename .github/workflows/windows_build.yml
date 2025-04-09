@@ -23,6 +23,9 @@ jobs:
             matrix:
                 PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.13t"]
                 TARGET_ARCH: ["x86_64-pc-windows-msvc", "aarch64-pc-windows-msvc"]
+                exclude:
+                  - PYTHON_VERSION: "3.9"
+                    TARGET_ARCH: "aarch64-pc-windows-msvc"
         steps:
             - name: Checkout branch
               uses: actions/checkout@v4
