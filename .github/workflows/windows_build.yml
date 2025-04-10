@@ -90,7 +90,7 @@ jobs:
               run: | 
                 nuget install pythonarm64 -Version ${{ env.PYTHON_VERSION_NONSUFFIX }} -OutputDirectory winpty\pythonarm
                 $nuget_python_version = (Get-ChildItem ${{ github.workspace }}\winpty\pythonarm).Name
-                echo "target_python=${{ github.workspace }}\winpty\pythonarm\$nuget_python_version\tools".replace('\', '/') >> $ENV:GITHUB_OUTPUT
+                echo "target_python=${{ github.workspace }}\winpty\pythonarm\$nuget_python_version\tools\python.exe".replace('\', '/') >> $ENV:GITHUB_OUTPUT
             # - if: matrix.TARGET_ARCH == 'aarch64-pc-windows-msvc'
             #   name: Setup ARM64 Python
             #   shell: bash -l {0}
