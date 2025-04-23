@@ -10,7 +10,7 @@ on:
             - main
 jobs:
     windows:
-        name: Windows Py${{ matrix.PYTHON_VERSION }} ${{ matrix.TARGET_ARCH }}
+        name: Windows Py${{ matrix.PYTHON_VERSION }} ${{ matrix.TARGET_ARCH }}-${{ matrix.OS }}
         runs-on: ${{ matrix.OS }}
         timeout-minutes: 10
         env:
