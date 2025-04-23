@@ -4,13 +4,14 @@ on:
     push:
         branches:
             - main
+            - arm64-runner
     pull_request:
         branches:
             - main
 jobs:
     windows:
-        name: Windows Py${{ matrix.PYTHON_VERSION }}
-        runs-on: windows-latest
+        name: Windows Py${{ matrix.PYTHON_VERSION }} ${{ matrix.TARGET_ARCH }}
+        runs-on: ${{ matrix.OS }}
         timeout-minutes: 10
         env:
             PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
@@ -21,14 +22,30 @@ jobs:
             fail-fast: false
             matrix:
                 PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.13t"]
+                TARGET_ARCH: ["x86_64-pc-windows-msvc", "aarch64-pc-windows-msvc"]
+                OS: [windows-latest, winodws-11-arm]
+                exclude:
+                  - PYTHON_VERSION: "3.9"
+                    TARGET_ARCH: "aarch64-pc-windows-msvc"
+                  - TARGET_ARCH: "aarch64-pc-windows-msvc"
+                    OS: windows-latest
+                  - TARGET_ARCH: "x86_64-pc-windows-msvc"
+                    OS: windows-11-arm
         steps:
             - name: Checkout branch
               uses: actions/checkout@v4
+            - if: ${{ matrix.OS == 'windows-11-arm' }}
+              name: Setup rust
+              id: setup-rust
+              run: |
+                  Invoke-WebRequest https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe -OutFile .\rustup-init.exe
+                  .\rustup-init.exe -y
+                  Add-Content $env:GITHUB_PATH "$env:USERPROFILE\.cargo\bin"
             - name: Install latest Rust stable
               uses: actions-rs/toolchain@v1
               with:
                 toolchain: stable
-                target: x86_64-pc-windows-msvc
+                target: ${{ matrix.TARGET_ARCH }}
                 override: true
                 components: rustfmt, clippy
             - name: Remove free-threaded suffix from version
