@@ -9,7 +9,7 @@ on:
             - main
 jobs:
     windows:
-        name: Windows Py${{ matrix.PYTHON_VERSION }}
+        name: Windows Py${{ matrix.PYTHON_VERSION }} ${{ matrix.PYTHON_ARCH }}
         runs-on: windows-latest
         timeout-minutes: 10
         env:
@@ -21,6 +21,9 @@ jobs:
             fail-fast: false
             matrix:
                 PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.13t"]
+                include:
+                  - {PYTHON_ARCH: "amd64", RUST_ARCH: "x86_64-pc-windows-msvc"}
+                  - {PYTHON_ARCH: "arm64", RUST_ARCH: "aarch64-pc-windows-msvc"}
         steps:
             - name: Checkout branch
               uses: actions/checkout@v4
@@ -28,7 +31,7 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                 toolchain: stable
-                target: x86_64-pc-windows-msvc
+                target: ${{ matrix.RUST_ARCH }}
                 override: true
                 components: rustfmt, clippy
             - uses: nuget/setup-nuget@v2
@@ -51,6 +54,7 @@ jobs:
                 auto-update-conda: true
                 activate-environment: test
                 channels: conda-forge,defaults
+                architecture: ${{ matrix.PYTHON_ARCH }}
                 python-version: ${{ env.PYTHON_VERSION_NONSUFFIX }}
             - name: Reinstall free-threaded Python
               if: ${{ endsWith(matrix.PYTHON_VERSION, 't') }}
@@ -68,7 +72,7 @@ jobs:
               run: pip install maturin toml pytest flaky
             - name: Build pywinpty
               shell: bash -l {0}
-              run: maturin develop
+              run: maturin develop --target ${{ matrix.RUST_ARCH }}
             - name: Run tests
               shell: pwsh
               run: python runtests.py
