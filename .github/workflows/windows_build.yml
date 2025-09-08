@@ -22,6 +22,7 @@ jobs:
             fail-fast: false
             matrix:
                 PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.13t"]
+                PYTHON_ARCH: ["amd64", "arm64"]
                 include:
                   - {PYTHON_ARCH: "amd64", RUST_ARCH: "x86_64-pc-windows-msvc"}
                   - {PYTHON_ARCH: "arm64", RUST_ARCH: "aarch64-pc-windows-msvc"}
