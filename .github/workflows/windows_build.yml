@@ -83,7 +83,7 @@ jobs:
               run: pip install maturin toml pytest flaky
             - name: Build pywinpty
               shell: bash -l {0}
-              run: maturin develop --target ${{ matrix.RUST_ARCH }} --interpreter ${{ steps.pyarm.outputs.python-path }}
+              run: maturin develop --target ${{ matrix.RUST_ARCH }} ${{ matrix.PYTHON_ARCH == 'arm64' && '--interpreter' }} ${{ steps.pyarm.outputs.python-path }}
             - name: Run tests
               shell: pwsh
               run: python runtests.py
