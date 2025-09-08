@@ -25,6 +25,9 @@ jobs:
                 include:
                   - {PYTHON_ARCH: "amd64", RUST_ARCH: "x86_64-pc-windows-msvc"}
                   - {PYTHON_ARCH: "arm64", RUST_ARCH: "aarch64-pc-windows-msvc"}
+                exclude:
+                  - {PYTHON_ARCH: "arm64", PYTHON_VERSION: "3.9"}
+                  - {PYTHON_ARCH: "arm64", PYTHON_VERSION: "3.10"}
         steps:
             - name: Checkout branch
               uses: actions/checkout@v4
@@ -38,6 +41,13 @@ jobs:
             - uses: nuget/setup-nuget@v2
               with:
                 nuget-version: '5.x'
+            - if: ${{ matrix.PYTHON_ARCH == 'arm64' }}
+              uses: actions/setup-python@v6 
+              id: pyarm
+              name: Install arm64 python
+              with:
+                python-version: ${{ matrix.PYTHON_VERSION }}
+                architecture: ${{ matrix.PYTHON_ARCH }}
             - name: Remove free-threaded suffix from version
               env:
                 PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
@@ -55,7 +65,6 @@ jobs:
                 auto-update-conda: true
                 activate-environment: test
                 channels: conda-forge,defaults
-                architecture: ${{ matrix.PYTHON_ARCH }}
                 python-version: ${{ env.PYTHON_VERSION_NONSUFFIX }}
             - name: Reinstall free-threaded Python
               if: ${{ endsWith(matrix.PYTHON_VERSION, 't') }}
@@ -73,7 +82,7 @@ jobs:
               run: pip install maturin toml pytest flaky
             - name: Build pywinpty
               shell: bash -l {0}
-              run: maturin develop --target ${{ matrix.RUST_ARCH }}
+              run: maturin develop --target ${{ matrix.RUST_ARCH }} --interpreter ${{ steps.pyarm.outputs.python-path }}
             - name: Run tests
               shell: pwsh
               run: python runtests.py
